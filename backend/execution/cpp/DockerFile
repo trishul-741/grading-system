@@ -1,0 +1,16 @@
+FROM gcc:14
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       coreutils \
+       bash \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+RUN useradd \
+    --create-home \
+    --shell /usr/sbin/nologin \
+    runner
+
+USER runner

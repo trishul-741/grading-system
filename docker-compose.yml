@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: grading-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: grader
+      POSTGRES_PASSWORD: grader123
+      POSTGRES_DB: grading_db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
