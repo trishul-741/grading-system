@@ -12,6 +12,7 @@ from app.enums import (
 
 
 class TestCaseCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     input: str = Field(
         ...,
@@ -31,6 +32,7 @@ class TestCaseCreate(BaseModel):
 
 
 class TestCaseUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     input: str | None = Field(
         default=None,

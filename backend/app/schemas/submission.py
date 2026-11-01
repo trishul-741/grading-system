@@ -11,6 +11,7 @@ from app.enums import ProgrammingLanguage
 
 
 class SubmissionCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     source_code: str = Field(
         ...,

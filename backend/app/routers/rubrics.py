@@ -1,159 +1,53 @@
 from uuid import UUID
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status
-)
-
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.auth.authorization import require_assignment_manage
+from app.auth.dependencies import get_current_user
 from app.database import get_db
-
-from app.schemas.rubric import (
-    RubricCreate,
-    RubricUpdate,
-    RubricResponse
-)
-
+from app.models.user import User
+from app.schemas.rubric import RubricCreate, RubricUpdate, RubricResponse
 from app.services.rubric_service import (
-    create_rubric,
-    get_rubrics,
-    get_rubric,
-    update_rubric,
-    delete_rubric
-)
-
-from app.services.assignment_service import get_assignment
-
-
-router = APIRouter(
-    prefix="/assignments/{assignment_id}/rubrics",
-    tags=["Rubrics"]
+    create_rubric, get_rubrics, get_rubric, update_rubric, delete_rubric,
 )
 
 
-@router.post(
-    "/",
-    response_model=RubricResponse,
-    status_code=status.HTTP_201_CREATED
-)
+router = APIRouter(prefix="/assignments/{assignment_id}/rubrics", tags=["Rubrics"])
+
+
+@router.post("/", response_model=RubricResponse, status_code=status.HTTP_201_CREATED)
 def create(
-    assignment_id: UUID,
-    data: RubricCreate,
-    db: Session = Depends(get_db)
+    assignment_id: UUID, data: RubricCreate, db: Session = Depends(get_db),
+    actor: User = Depends(get_current_user),
 ):
-
-    assignment = get_assignment(
-        db,
-        assignment_id
-    )
-
-    if not assignment:
-        raise HTTPException(
-            status_code=404,
-            detail="Assignment not found"
-        )
-
-    return create_rubric(
-        db,
-        assignment_id,
-        data
-    )
+    return create_rubric(db, assignment_id, data, actor=actor)
 
 
-@router.get(
-    "/",
-    response_model=list[RubricResponse]
-)
+@router.get("/", response_model=list[RubricResponse])
 def get_all(
-    assignment_id: UUID,
-    db: Session = Depends(get_db)
+    assignment_id: UUID, db: Session = Depends(get_db),
+    actor: User = Depends(get_current_user),
 ):
-
-    assignment = get_assignment(
-        db,
-        assignment_id
-    )
-
-    if not assignment:
-        raise HTTPException(
-            status_code=404,
-            detail="Assignment not found"
-        )
-
-    return get_rubrics(
-        db,
-        assignment_id
-    )
+    return get_rubrics(db, assignment_id, actor=actor)
 
 
-@router.put(
-    "/{rubric_id}",
-    response_model=RubricResponse
-)
+@router.put("/{rubric_id}", response_model=RubricResponse)
 def update(
-    assignment_id: UUID,
-    rubric_id: UUID,
-    data: RubricUpdate,
-    db: Session = Depends(get_db)
+    assignment_id: UUID, rubric_id: UUID, data: RubricUpdate,
+    db: Session = Depends(get_db), actor: User = Depends(get_current_user),
 ):
-
-    rubric = get_rubric(
-        db,
-        rubric_id
-    )
-
-    if not rubric:
-        raise HTTPException(
-            status_code=404,
-            detail="Rubric not found"
-        )
-
-    if rubric.assignment_id != assignment_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Rubric does not belong to this assignment"
-        )
-
-    return update_rubric(
-        db,
-        rubric,
-        data
-    )
+    require_assignment_manage(db, assignment_id, actor)
+    rubric = get_rubric(db, rubric_id, actor=actor, assignment_id=assignment_id)
+    return update_rubric(db, rubric, data, actor=actor)
 
 
-@router.delete(
-    "/{rubric_id}",
-    status_code=status.HTTP_204_NO_CONTENT
-)
+@router.delete("/{rubric_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete(
-    assignment_id: UUID,
-    rubric_id: UUID,
-    db: Session = Depends(get_db)
+    assignment_id: UUID, rubric_id: UUID, db: Session = Depends(get_db),
+    actor: User = Depends(get_current_user),
 ):
-
-    rubric = get_rubric(
-        db,
-        rubric_id
-    )
-
-    if not rubric:
-        raise HTTPException(
-            status_code=404,
-            detail="Rubric not found"
-        )
-
-    if rubric.assignment_id != assignment_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Rubric does not belong to this assignment"
-        )
-
-    delete_rubric(
-        db,
-        rubric
-    )
-
+    require_assignment_manage(db, assignment_id, actor)
+    rubric = get_rubric(db, rubric_id, actor=actor, assignment_id=assignment_id)
+    delete_rubric(db, rubric, actor=actor)
     return None

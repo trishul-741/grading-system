@@ -7,6 +7,7 @@ from app.enums import EvaluationType
 
 
 class RubricCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     criterion: str = Field(
         ...,
@@ -31,6 +32,7 @@ class RubricCreate(BaseModel):
 
 
 class RubricUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     criterion: str | None = Field(
         default=None,

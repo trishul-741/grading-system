@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, DateTime, Enum
+from sqlalchemy import Boolean, Column, String, DateTime, Enum, true
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -43,6 +43,8 @@ class User(Base):
         nullable=False,
         default=UserRole.STUDENT
     )
+
+    is_active = Column(Boolean, nullable=False, default=True, server_default=true())
 
     created_at = Column(
         DateTime(timezone=True),

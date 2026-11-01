@@ -1,0 +1,5 @@
+{
+  "language": "CPP",
+  "source_code": "#include <iostream>\nint main() { int a, b; std::cin >> a >> b; std::cout << a + b << '\\n'; }",
+  "input_data": "10 20\n"
+}

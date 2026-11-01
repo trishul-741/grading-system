@@ -29,9 +29,6 @@ int main() {
 # """
 
 
-result = execute_cpp(
-    source_code=code,
-    input_data="10 20"
-)
-
-print(result.model_dump())
+if __name__ == "__main__":
+    result = execute_cpp(source_code=code, input_data="10 20")
+    print(result.model_dump_json())

@@ -10,6 +10,7 @@ from app.enums import (
 
 
 class AssignmentCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     title: str = Field(
         ...,
@@ -32,6 +33,7 @@ class AssignmentCreate(BaseModel):
 
 
 class AssignmentUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     title: str | None = Field(
         default=None,

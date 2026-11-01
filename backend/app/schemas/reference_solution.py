@@ -7,6 +7,7 @@ from app.enums import ProgrammingLanguage
 
 
 class ReferenceSolutionCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     language: ProgrammingLanguage
 
@@ -17,6 +18,7 @@ class ReferenceSolutionCreate(BaseModel):
 
 
 class ReferenceSolutionUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     language: ProgrammingLanguage | None = None
 

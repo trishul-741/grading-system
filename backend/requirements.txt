@@ -6,3 +6,5 @@ pydantic
 pydantic-settings
 alembic
 python-dotenv
+pwdlib[argon2]>=0.3,<1
+PyJWT>=2.10,<3
